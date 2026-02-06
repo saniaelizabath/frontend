@@ -119,7 +119,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
           title: item.title,
           description: item.description,
           date: item.date,
-          image: `http://127.0.0.1:8000/${item.image_path}`,
+          image: `https:magmarine.in/${item.image_path}`,
         }))
       );
     } catch (err) {
