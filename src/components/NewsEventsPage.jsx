@@ -16,7 +16,7 @@ const NewsEventsPage = () => {
             id: item.id,
             title: item.title,
             description: item.description,
-            image: `http://127.0.0.1:8000/${item.image_path}`,
+            image: `https://magmarine.in/${item.image_path}`,
             date: item.date,
           }))
         );
