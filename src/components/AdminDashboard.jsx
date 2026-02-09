@@ -5,14 +5,14 @@ import API from "../api";
 // Icons used in the Quick Links cards (employee side uses the same set)
 // ─────────────────────────────────────────
 const LINK_ICONS = {
-  attendance_url:     "👥",
+  attendance_url: "👥",
   project_report_url: "📋",
-  timesheet_url:      "⏰",
-  policy_hub_url:     "📚",
-  inventory_url:      "📦",
-  petty_cash_url:     "💰",
+  timesheet_url: "⏰",
+  policy_hub_url: "📚",
+  inventory_url: "📦",
+  petty_cash_url: "💰",
   salary_advance_url: "💵",
-  approved_pr_url:    "✅",
+  approved_pr_url: "✅",
 };
 
 const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
@@ -74,7 +74,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
   };
   const [linksForm, setLinksForm] = useState({});
   const [linksSaved, setLinksSaved] = useState(true);
-  
+
   // Individual link editing
   const [editingLinkKey, setEditingLinkKey] = useState(null);
   const [editingLinkValue, setEditingLinkValue] = useState("");
@@ -88,6 +88,17 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     url: ""
   });
   const [editingAdminLinkId, setEditingAdminLinkId] = useState(null);
+
+  // ─────────────────────────────────────────
+  // Employee Custom Links states (admin creates custom links for employees)
+  // ─────────────────────────────────────────
+  const [employeeCustomLinks, setEmployeeCustomLinks] = useState([]);
+  const [customLinkForm, setCustomLinkForm] = useState({
+    employee_id: null,
+    name: "",
+    url: ""
+  });
+  const [editingCustomLinkId, setEditingCustomLinkId] = useState(null);
 
   // =========================
   // AUTH GUARD
@@ -351,7 +362,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
       formData.append("url", editingLinkValue);
 
       await API.patch(`/employee-links/${selectedEmployeeForLinks}/${linkKey}`, formData);
-      
+
       // Update local state
       setLinksForm(prev => ({ ...prev, [linkKey]: editingLinkValue }));
       setEditingLinkKey(null);
@@ -366,7 +377,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
   // =========================
   // ADMIN LINKS MANAGEMENT
   // =========================
-  
+
   const handleAdminLinkSubmit = async (e) => {
     e.preventDefault();
 
@@ -418,6 +429,87 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
   const handleOpenAdminLink = (url) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  // =========================
+  // EMPLOYEE CUSTOM LINKS HANDLERS
+  // =========================
+  const loadEmployeeCustomLinks = async (employeeId) => {
+    if (!employeeId) {
+      setEmployeeCustomLinks([]);
+      return;
+    }
+
+    try {
+      const res = await API.get(`/employee-custom-links/${employeeId}`);
+      setEmployeeCustomLinks(res.data);
+    } catch (err) {
+      console.error("Error loading employee custom links:", err);
+      setEmployeeCustomLinks([]);
+    }
+  };
+
+  const handleCustomLinkSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!customLinkForm.employee_id) {
+      alert("Please select an employee first");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("employee_id", customLinkForm.employee_id);
+      formData.append("name", customLinkForm.name);
+      formData.append("url", customLinkForm.url);
+
+      if (editingCustomLinkId) {
+        await API.put(`/employee-custom-links/${editingCustomLinkId}`, formData);
+        alert("Custom link updated successfully!");
+        setEditingCustomLinkId(null);
+      } else {
+        await API.post("/employee-custom-links", formData);
+        alert("Custom link added successfully!");
+      }
+
+      await loadEmployeeCustomLinks(customLinkForm.employee_id);
+      setCustomLinkForm({ employee_id: customLinkForm.employee_id, name: "", url: "" });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save custom link: " + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleEditCustomLink = (link) => {
+    setEditingCustomLinkId(link._id);
+    setCustomLinkForm({
+      employee_id: link.employee_id,
+      name: link.name,
+      url: link.url
+    });
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteCustomLink = async (linkId, linkName) => {
+    if (!window.confirm(`Delete custom link: ${linkName}?`)) return;
+
+    try {
+      await API.delete(`/employee-custom-links/${linkId}`);
+      await loadEmployeeCustomLinks(customLinkForm.employee_id);
+      alert("Custom link deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete custom link: " + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleSelectEmployeeForCustomLinks = async (employeeId) => {
+    const empId = employeeId ? parseInt(employeeId) : null;
+    setCustomLinkForm({ employee_id: empId, name: "", url: "" });
+    setEditingCustomLinkId(null);
+    await loadEmployeeCustomLinks(empId);
+  };
+
 
   // =========================
   // IMAGE PREVIEW
@@ -621,20 +713,19 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
         <div className="max-w-7xl mx-auto mb-6 sm:mb-8">
           <div className="flex gap-10 sm:gap-12 bg-slate-800/50 p-2 rounded-xl backdrop-blur-sm overflow-x-auto scrollbar-hide">
             {[
-              { key: "news",       label: "📰", fullLabel: "News & Events" },
-              { key: "careers",    label: "💼", fullLabel: "Careers"       },
-              { key: "employees",  label: "👥", fullLabel: "Employees"     },
-              { key: "attendance", label: "📊", fullLabel: "Attendance"    },
-              { key: "admin-links", label: "📎", fullLabel: "My Links"     },
+              { key: "news", label: "📰", fullLabel: "News & Events" },
+              { key: "careers", label: "💼", fullLabel: "Careers" },
+              { key: "employees", label: "👥", fullLabel: "Employees" },
+              { key: "attendance", label: "📊", fullLabel: "Attendance" },
+              { key: "admin-links", label: "📎", fullLabel: "My Links" },
             ].map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
-                  activeTab === tab.key
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
-                    : "text-blue-300 hover:bg-slate-700/50"
-                }`}
+                className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${activeTab === tab.key
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
+                  : "text-blue-300 hover:bg-slate-700/50"
+                  }`}
               >
                 <span className="sm:hidden">{tab.label}</span>
                 <span className="hidden sm:inline">{tab.label} {tab.fullLabel}</span>
@@ -900,10 +991,10 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                       <div key={item.key} className="bg-slate-700/50 p-3 sm:p-4 rounded-lg border border-slate-600">
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-blue-300 text-xs sm:text-sm font-semibold flex items-center gap-2">
-                            <span>{LINK_ICONS[item.key]}</span> 
+                            <span>{LINK_ICONS[item.key]}</span>
                             <span className="truncate">{item.name}</span>
                           </label>
-                          
+
                           {editingLinkKey === item.key ? (
                             <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                               <button
@@ -928,7 +1019,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                             </button>
                           )}
                         </div>
-                        
+
                         {editingLinkKey === item.key ? (
                           <input
                             type="url"
@@ -951,11 +1042,10 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <button
                       onClick={handleSaveLinks}
-                      className={`flex-1 py-2 sm:py-3 font-semibold rounded-lg transition-all duration-300 text-sm sm:text-base ${
-                        linksSaved
-                          ? "bg-slate-600 text-slate-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/50"
-                      }`}
+                      className={`flex-1 py-2 sm:py-3 font-semibold rounded-lg transition-all duration-300 text-sm sm:text-base ${linksSaved
+                        ? "bg-slate-600 text-slate-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/50"
+                        }`}
                       disabled={linksSaved}
                     >
                       💾 Save All Links
@@ -980,6 +1070,156 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                 </div>
               )}
             </div>
+
+            {/* Custom Links Manager - Mobile Optimized */}
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-cyan-500/20">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                <span>🔗</span> Manage Custom Links for Employees
+              </h3>
+              <p className="text-slate-400 text-xs sm:text-sm mb-4 sm:mb-6">
+                Add custom links for employees that will appear on their dashboard alongside the predefined links.
+              </p>
+
+              {/* Employee Selector */}
+              <div className="mb-4 sm:mb-6">
+                <label className="text-blue-300 text-xs sm:text-sm font-semibold mb-2 block">Select Employee</label>
+                <select
+                  value={customLinkForm.employee_id || ""}
+                  onChange={(e) => handleSelectEmployeeForCustomLinks(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none transition-colors cursor-pointer text-sm sm:text-base"
+                >
+                  <option value="">-- Choose an employee --</option>
+                  {employees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.id} – {emp.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {customLinkForm.employee_id && (
+                <>
+                  {/* Add/Edit Form */}
+                  <form onSubmit={handleCustomLinkSubmit} className="bg-slate-700/50 p-4 sm:p-6 rounded-xl border border-slate-600 mb-4 sm:mb-6">
+                    <h4 className="text-lg sm:text-xl font-bold text-white mb-4">
+                      {editingCustomLinkId ? "✏️ Edit Custom Link" : "➕ Add Custom Link"}
+                    </h4>
+
+                    <div className="space-y-3 sm:space-y-4">
+                      <div>
+                        <label className="text-blue-300 text-xs sm:text-sm font-semibold mb-2 block">Link Name</label>
+                        <input
+                          type="text"
+                          value={customLinkForm.name}
+                          onChange={(e) => setCustomLinkForm({ ...customLinkForm, name: e.target.value })}
+                          placeholder="e.g., Safety Training, Equipment Manual"
+                          required
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none transition-colors text-sm sm:text-base"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-blue-300 text-xs sm:text-sm font-semibold mb-2 block">Link URL</label>
+                        <input
+                          type="url"
+                          value={customLinkForm.url}
+                          onChange={(e) => setCustomLinkForm({ ...customLinkForm, url: e.target.value })}
+                          placeholder="https://docs.google.com/..."
+                          required
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none transition-colors text-sm sm:text-base"
+                        />
+                      </div>
+                    </div>
+
+                    <button className="w-full mt-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 text-sm sm:text-base">
+                      {editingCustomLinkId ? "💾 Update Link" : "➕ Add Link"}
+                    </button>
+
+                    {editingCustomLinkId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCustomLinkId(null);
+                          setCustomLinkForm({ employee_id: customLinkForm.employee_id, name: "", url: "" });
+                        }}
+                        className="w-full mt-2 py-2 sm:py-3 bg-slate-700 text-slate-300 font-semibold rounded-lg hover:bg-slate-600 transition-all duration-300 text-sm sm:text-base"
+                      >
+                        Cancel Edit
+                      </button>
+                    )}
+                  </form>
+
+                  {/* Custom Links List */}
+                  <div className="bg-slate-700/50 p-4 sm:p-6 rounded-xl border border-slate-600">
+                    <h4 className="text-lg sm:text-xl font-bold text-white mb-4">
+                      📎 Custom Links ({employeeCustomLinks.length})
+                    </h4>
+
+                    {employeeCustomLinks.length === 0 ? (
+                      <div className="text-center py-8 text-slate-400">
+                        <div className="text-4xl mb-3">🔗</div>
+                        <p className="text-sm">No custom links added yet. Add your first custom link above!</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {employeeCustomLinks.map((link) => (
+                          <div
+                            key={link._id}
+                            className="flex flex-col sm:flex-row justify-between items-start gap-3 bg-slate-800/50 p-4 rounded-xl border border-slate-600 hover:border-cyan-500/50 transition-all duration-300"
+                          >
+                            <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0 w-full">
+                              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg flex items-center justify-center border border-cyan-500/30">
+                                <span className="text-xl sm:text-2xl">🔗</span>
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-white font-semibold text-base sm:text-lg mb-1 truncate">
+                                  {link.name}
+                                </h4>
+                                <p className="text-slate-400 text-xs sm:text-sm truncate">
+                                  {link.url}
+                                </p>
+                                {link.created_at && (
+                                  <p className="text-slate-500 text-[10px] sm:text-xs mt-1">
+                                    Added: {new Date(link.created_at).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    })}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
+                              <button
+                                onClick={() => handleEditCustomLink(link)}
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600/20 border border-blue-500/40 text-blue-300 rounded-lg hover:bg-blue-600/30 transition-all duration-300 text-xs sm:text-sm"
+                              >
+                                ✏️ Edit
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteCustomLink(link._id, link.name)}
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-600/20 border border-red-500/40 text-red-300 rounded-lg hover:bg-red-600/30 transition-all duration-300 text-xs sm:text-sm"
+                              >
+                                🗑️ Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {!customLinkForm.employee_id && (
+                <div className="text-center py-6 text-slate-500 text-xs sm:text-sm">
+                  Select an employee above to manage their custom links
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -995,21 +1235,20 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
 
               <div className="grid grid-cols-2 md:grid-cols-6 gap-2 sm:gap-3 mb-3 sm:mb-4">
                 {[
-                  { key: 'today',        label: '📅 Today'        },
-                  { key: 'week',         label: '📆 Week'    },
-                  { key: 'month',        label: '📊 Month'   },
-                  { key: 'custom-date',  label: '📌 Date'  },
-                  { key: 'custom-week',  label: '📅 Week Range'  },
+                  { key: 'today', label: '📅 Today' },
+                  { key: 'week', label: '📆 Week' },
+                  { key: 'month', label: '📊 Month' },
+                  { key: 'custom-date', label: '📌 Date' },
+                  { key: 'custom-week', label: '📅 Week Range' },
                   { key: 'custom-month', label: '📅 Month' },
                 ].map(f => (
                   <button
                     key={f.key}
                     onClick={() => setFilterType(f.key)}
-                    className={`py-2 sm:py-3 px-2 sm:px-4 rounded-lg font-semibold transition-all text-xs sm:text-sm ${
-                      filterType === f.key
-                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
+                    className={`py-2 sm:py-3 px-2 sm:px-4 rounded-lg font-semibold transition-all text-xs sm:text-sm ${filterType === f.key
+                      ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      }`}
                   >
                     {f.label}
                   </button>
@@ -1165,13 +1404,13 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
         {/* ADMIN LINKS TAB - Mobile Optimized */}
         {activeTab === "admin-links" && (
           <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
-            
+
             {/* Add / Edit Admin Link Form */}
             <form onSubmit={handleAdminLinkSubmit} className="space-y-3 sm:space-y-4 bg-slate-800/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-cyan-500/20 backdrop-blur-sm">
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                 {editingAdminLinkId ? "✏️ Edit Link" : "➕ Add New Link"}
               </h3>
-              
+
               <p className="text-slate-400 text-xs sm:text-sm mb-3 sm:mb-4">
                 Add your own Excel sheets and documents with custom names and URLs for quick access.
               </p>
@@ -1238,7 +1477,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                         <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg flex items-center justify-center border border-cyan-500/30">
                           <span className="text-xl sm:text-2xl">📊</span>
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h4 className="text-white font-semibold text-base sm:text-lg mb-1 truncate">
                             {link.name}
@@ -1269,14 +1508,14 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                           </svg>
                           <span className="hidden sm:inline">Open</span>
                         </button>
-                        
+
                         <button
                           onClick={() => handleEditAdminLink(link)}
                           className="px-3 sm:px-4 py-2 bg-blue-600/20 border border-blue-500/40 text-blue-300 rounded-lg hover:bg-blue-600/30 transition-all duration-300 text-xs sm:text-sm"
                         >
                           ✏️
                         </button>
-                        
+
                         <button
                           onClick={() => handleDeleteAdminLink(link._id, link.name)}
                           className="px-3 sm:px-4 py-2 bg-red-600/20 border border-red-500/40 text-red-300 rounded-lg hover:bg-red-600/30 transition-all duration-300 text-xs sm:text-sm"

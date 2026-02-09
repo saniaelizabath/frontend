@@ -20,7 +20,7 @@ const ServicesPage = () => {
     {
       id: 1,
       title: "Shipbuilding & New Construction",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800",
+      image: "https://images.unsplash.com/photo-1645932647969-6a92e3d6667f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       items: [
         "Hull fabrication & structural works",
         "Outfitting and installation",
@@ -59,7 +59,7 @@ const ServicesPage = () => {
     {
       id: 2,
       title: "Marine & Civil Construction",
-      image: "https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=800",
+      image: "https://images.unsplash.com/photo-1662727247800-00be77e8d7c8?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       items: [
         "Shipping, Marine & Civil Construction",
         "Aluminium & Steel Shipbuilding",

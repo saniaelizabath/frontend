@@ -7,14 +7,14 @@ import API from '../api';
 // what the backend returns.
 // ─────────────────────────────────────────
 const LINK_ICONS = {
-  attendance_url:     "👥",
+  attendance_url: "👥",
   project_report_url: "📋",
-  timesheet_url:      "⏰",
-  policy_hub_url:     "📚",
-  inventory_url:      "📦",
-  petty_cash_url:     "💰",
+  timesheet_url: "⏰",
+  policy_hub_url: "📚",
+  inventory_url: "📦",
+  petty_cash_url: "💰",
   salary_advance_url: "💵",
-  approved_pr_url:    "✅",
+  approved_pr_url: "✅",
 };
 
 const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
@@ -48,21 +48,37 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
         const configRes = await API.get("/employee-links/config");
         const config = configRes.data.links; // [{ key, name }, ...]
 
-        // 2) Get this employee's saved URLs
+        // 2) Get this employee's saved URLs (predefined links)
         const linksRes = await API.get(`/employee-links/${loggedInEmployee.id}`);
         const saved = linksRes.data; // { attendance_url: "...", ... }
 
         // 3) Merge – keep only entries that actually have a URL
-        const built = config
+        const predefinedLinks = config
           .filter(item => saved[item.key] && saved[item.key].trim() !== "")
           .map(item => ({
-            key:  item.key,
+            key: item.key,
             name: item.name,
             icon: LINK_ICONS[item.key] || "🔗",
-            url:  saved[item.key],
+            url: saved[item.key],
           }));
 
-        setQuickLinks(built);
+        // 4) Get custom links created by admin
+        let customLinks = [];
+        try {
+          const customRes = await API.get(`/employee-custom-links/${loggedInEmployee.id}`);
+          customLinks = customRes.data.map(link => ({
+            key: `custom_${link._id}`,
+            name: link.name,
+            icon: "🔗",
+            url: link.url,
+            isCustom: true
+          }));
+        } catch (err) {
+          console.error("Failed to load custom links:", err);
+        }
+
+        // 5) Combine predefined and custom links
+        setQuickLinks([...predefinedLinks, ...customLinks]);
       } catch (err) {
         console.error("Failed to load quick links:", err);
         setQuickLinks([]);
@@ -93,23 +109,23 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
 
     if (isNaN(dateObj.getTime())) return null;
 
-    const year  = dateObj.getFullYear();
+    const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day   = String(dateObj.getDate()).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   };
 
   const getFilterLabel = () => {
     switch (filterType) {
-      case 'today':        return 'Today';
-      case 'week':         return 'This Week';
-      case 'month':        return 'This Month';
-      case 'all':          return 'All Time';
-      case 'custom-date':  return `${formatDate(customDate)}`;
-      case 'custom-week':  return `Week (${formatDate(customWeekStart)} to ${formatDate(customWeekEnd)})`;
+      case 'today': return 'Today';
+      case 'week': return 'This Week';
+      case 'month': return 'This Month';
+      case 'all': return 'All Time';
+      case 'custom-date': return `${formatDate(customDate)}`;
+      case 'custom-week': return `Week (${formatDate(customWeekStart)} to ${formatDate(customWeekEnd)})`;
       case 'custom-month': return `${new Date(selectedYear, selectedMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
-      default:             return 'This Month';
+      default: return 'This Month';
     }
   };
 
@@ -157,7 +173,7 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
       setAttendanceRecords(records);
 
       // Find today's record
-      const today   = new Date();
+      const today = new Date();
       const todayStr = normalizeDate(today);
 
       const todayRecord = records.find(record => {
@@ -184,7 +200,7 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
-            latitude:  position.coords.latitude,
+            latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
         },
@@ -219,8 +235,8 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
 
       const formData = new FormData();
       formData.append('employee_id', loggedInEmployee.id);
-      formData.append('latitude',    location.latitude);
-      formData.append('longitude',   location.longitude);
+      formData.append('latitude', location.latitude);
+      formData.append('longitude', location.longitude);
 
       const response = await API.post('/attendance/mark-in', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -250,8 +266,8 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
 
       const formData = new FormData();
       formData.append('employee_id', loggedInEmployee.id);
-      formData.append('latitude',    location.latitude);
-      formData.append('longitude',   location.longitude);
+      formData.append('latitude', location.latitude);
+      formData.append('longitude', location.longitude);
 
       const response = await API.post('/attendance/mark-out', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -280,10 +296,10 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
 
   const calculateTotalHours = (inTime, outTime) => {
     if (!inTime || !outTime) return '-';
-    const start   = new Date(inTime);
-    const end     = new Date(outTime);
-    const diffMs  = end - start;
-    const diffHours   = Math.floor(diffMs / (1000 * 60 * 60));
+    const start = new Date(inTime);
+    const end = new Date(outTime);
+    const diffMs = end - start;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     return `${diffHours}h ${diffMinutes}m`;
   };
@@ -300,10 +316,10 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
   };
 
   const calculateStats = () => {
-    const records     = Array.isArray(attendanceRecords) ? attendanceRecords : [];
-    const totalDays   = records.length;
+    const records = Array.isArray(attendanceRecords) ? attendanceRecords : [];
+    const totalDays = records.length;
     const presentDays = records.filter(r => r.in_time && r.out_time).length;
-    const percentage  = totalDays > 0 ? ((presentDays / totalDays) * 100).toFixed(1) : 0;
+    const percentage = totalDays > 0 ? ((presentDays / totalDays) * 100).toFixed(1) : 0;
     return { totalDays, presentDays, percentage };
   };
 
@@ -489,21 +505,20 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
 
           <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
             {[
-              { key: 'today',        label: '📅 Today'        },
-              { key: 'week',         label: '📆 This Week'    },
-              { key: 'month',        label: '📊 This Month'   },
-              { key: 'all',          label: '♾️ All Time'     },
-              { key: 'custom-date',  label: '📌 Custom Date'  },
+              { key: 'today', label: '📅 Today' },
+              { key: 'week', label: '📆 This Week' },
+              { key: 'month', label: '📊 This Month' },
+              { key: 'all', label: '♾️ All Time' },
+              { key: 'custom-date', label: '📌 Custom Date' },
               { key: 'custom-month', label: '📅 Custom Month' },
             ].map(f => (
               <button
                 key={f.key}
                 onClick={() => setFilterType(f.key)}
-                className={`py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
-                  filterType === f.key
+                className={`py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${filterType === f.key
                     ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/50'
                     : 'bg-slate-700 text-slate-300 hover:bg-slate-600 border border-slate-600'
-                }`}
+                  }`}
               >
                 {f.label}
               </button>
@@ -523,7 +538,7 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
                 <div>
                   <label className="text-blue-300 text-sm mb-2 block font-semibold">Month</label>
                   <select value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))} className="w-full px-4 py-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all cursor-pointer">
-                    {['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => (
+                    {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => (
                       <option key={index} value={index + 1}>{month}</option>
                     ))}
                   </select>

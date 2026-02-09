@@ -333,9 +333,7 @@ const Projects = () => {
 
                                             {milestone.outcomes && (
                                                 <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-200">
-                                                    <h4 className="text-sm font-black text-slate-800 mb-3 uppercase tracking-wider">
-                                                        Strategic Impact
-                                                    </h4>
+                                                    
                                                     <ul className="space-y-3">
                                                         {milestone.outcomes.map((outcome, oIdx) => (
                                                             <li
