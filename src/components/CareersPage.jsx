@@ -24,42 +24,18 @@ const CareersPage = () => {
       });
   }, []);
 
-  const handleApply = async (jobTitle) => {
-    try {
-      const formData = new FormData();
-      formData.append('job_title', jobTitle);
-
-      // ✅ Using API instance instead of fetch
-      const response = await API.post('/api/send-application', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data && response.data.success) {
-        alert('Application received! Please send your resume to careers@magmarine.in with the subject: Application for ' + jobTitle);
-      } else {
-        // Fallback to mailto
-        const subject = encodeURIComponent(`Application for ${jobTitle}`);
-        const body = encodeURIComponent(
-          `Dear Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position at Mag Marine Services.\n\nPlease find my resume attached.\n\nBest regards,`
-        );
-        window.location.href = `mailto:careers@magmarine.in?subject=${subject}&body=${body}`;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      // Fallback to mailto
-      const subject = encodeURIComponent(`Application for ${jobTitle}`);
-      const body = encodeURIComponent(
-        `Dear Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position.\n\nPlease find my resume attached.\n\nBest regards,`
-      );
-      window.location.href = `mailto:careers@magmarine.in?subject=${subject}&body=${body}`;
-    }
+  const handleApply = (jobTitle) => {
+    // Open user's default email client with pre-filled email
+    const subject = encodeURIComponent(`Application for ${jobTitle}`);
+    const body = encodeURIComponent(
+      `Dear Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position at Mag Marine Services.\n\nPlease find my resume attached to this email.\n\nBest regards,`
+    );
+    window.location.href = `mailto:careers@magmarine.in?subject=${subject}&body=${body}`;
   };
 
   return (
     <div className="relative bg-slate-900">
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${careersBackground})`,
