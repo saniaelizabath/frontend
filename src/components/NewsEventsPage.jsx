@@ -5,6 +5,9 @@ import newsBackground from "/backgrounds/news.jpg";
 const NewsEventsPage = () => {
   const [newsEvents, setNewsEvents] = useState([]);
 
+  // Get API base URL from environment or default
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
   // -------------------------
   // Fetch news from backend
   // -------------------------
@@ -16,7 +19,8 @@ const NewsEventsPage = () => {
             id: item.id,
             title: item.title,
             description: item.description,
-            image: `https://magmarine.in/${item.image_path}`,
+            // ✅ Use API base URL instead of hardcoded domain
+            image: item.image ? `${API_BASE_URL}/${item.image}` : null,
             date: item.date,
           }))
         );
@@ -29,7 +33,7 @@ const NewsEventsPage = () => {
   return (
     <div className="relative bg-slate-900">
       {/* Background Image - Changed from fixed to absolute */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${newsBackground})`,

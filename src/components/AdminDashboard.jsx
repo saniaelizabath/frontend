@@ -124,13 +124,17 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
   const loadNews = async () => {
     try {
       const res = await API.get("/news");
+      // Get API base URL from environment or default
+      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
       setNewsEvents(
         res.data.map((item) => ({
           id: item._id,
           title: item.title,
           description: item.description,
           date: item.date,
-          image: `https:magmarine.in/${item.image_path}`,
+          // ✅ Use API base URL instead of hardcoded domain
+          image: item.image ? `${API_BASE_URL}/${item.image}` : "",
         }))
       );
     } catch (err) {
