@@ -11,6 +11,7 @@ import Locations from './components/Locations';
 import ServicesPage from './components/ServicesPage';
 import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
+import Projects from './components/Projects';
 import PortalPage from './components/PortalPage';
 import AdminDashboard from './components/AdminDashboard';
 import NewsEventsPage from './components/NewsEventsPage';
@@ -33,7 +34,7 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const type = urlParams.get('type');
-    
+
     if (token) {
       if (type === 'employee') {
         return 'employee-reset-password';
@@ -49,7 +50,7 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('token');
   });
-  
+
   // State for admin-added content
   const [newsEvents, setNewsEvents] = useState([]);
   const [careers, setCareers] = useState([]);
@@ -63,16 +64,16 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const type = urlParams.get('type');
-    
+
     if (token) {
       setResetToken(token);
-      
+
       if (type === 'employee') {
         setCurrentPage('employee-reset-password');
       } else {
         setCurrentPage('reset-password');
       }
-      
+
       // Clean up URL (remove token from address bar)
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -113,7 +114,7 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
       <Header currentPage={currentPage} setCurrentPage={handlePageChange} />
-      
+
       <main className="flex-1 w-full">
         {/* Home Page with Smooth Scroll Snapping */}
         {currentPage === 'home' && (
@@ -164,12 +165,19 @@ function App() {
           </div>
         )}
 
+        {/* Projects Page */}
+        {currentPage === 'projects' && (
+          <div className="w-full">
+            <Projects />
+          </div>
+        )}
+
         {/* Portal Page */}
         {currentPage === 'portal' && (
           <div className="w-full">
-            <PortalPage 
-              setCurrentPage={handlePageChange} 
-              setIsAdmin={setIsAdmin} 
+            <PortalPage
+              setCurrentPage={handlePageChange}
+              setIsAdmin={setIsAdmin}
             />
           </div>
         )}
@@ -191,8 +199,8 @@ function App() {
         {/* Admin Reset Password */}
         {currentPage === "reset-password" && (
           <div className="w-full">
-            <ResetPasswordPage 
-              setCurrentPage={handlePageChange} 
+            <ResetPasswordPage
+              setCurrentPage={handlePageChange}
               token={resetToken}
             />
           </div>
@@ -201,7 +209,7 @@ function App() {
         {/* Admin Dashboard */}
         {currentPage === 'admin-dashboard' && (
           <div className="w-full">
-            <AdminDashboard 
+            <AdminDashboard
               newsEvents={newsEvents}
               setNewsEvents={setNewsEvents}
               careers={careers}
@@ -214,7 +222,7 @@ function App() {
         {/* Employee Portal Page - Select Employee */}
         {currentPage === 'employee-portal' && (
           <div className="w-full">
-            <EmployeePortalPage 
+            <EmployeePortalPage
               setCurrentPage={handlePageChange}
               setSelectedEmployee={setSelectedEmployee}
             />
@@ -224,7 +232,7 @@ function App() {
         {/* Employee Login Page */}
         {currentPage === 'employee-login' && (
           <div className="w-full">
-            <EmployeeLoginPage 
+            <EmployeeLoginPage
               setCurrentPage={handlePageChange}
               selectedEmployee={selectedEmployee}
               setLoggedInEmployee={setLoggedInEmployee}
@@ -235,7 +243,7 @@ function App() {
         {/* Employee Forgot Password */}
         {currentPage === 'employee-forgot-password' && (
           <div className="w-full">
-            <EmployeeForgotPasswordPage 
+            <EmployeeForgotPasswordPage
               setCurrentPage={handlePageChange}
               selectedEmployee={selectedEmployee}
             />
@@ -245,7 +253,7 @@ function App() {
         {/* Employee Reset Password */}
         {currentPage === 'employee-reset-password' && (
           <div className="w-full">
-            <EmployeeResetPasswordPage 
+            <EmployeeResetPasswordPage
               setCurrentPage={handlePageChange}
               token={resetToken}
             />
@@ -255,7 +263,7 @@ function App() {
         {/* Employee Dashboard */}
         {currentPage.startsWith('employee-dashboard-') && loggedInEmployee && (
           <div className="w-full">
-            <EmployeeDashboard 
+            <EmployeeDashboard
               loggedInEmployee={loggedInEmployee}
               setCurrentPage={handlePageChange}
             />
@@ -289,10 +297,10 @@ function App() {
           className="fixed bottom-6 right-4 md:bottom-8 md:right-8 bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-3 md:p-4 rounded-full shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-110 z-50 group"
           aria-label="Scroll to top"
         >
-          <svg 
-            className="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-y-1 transition-transform duration-300" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            className="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-y-1 transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />

@@ -19,16 +19,43 @@ const ServicesPage = () => {
   const services = [
     {
       id: 1,
-      title: "Diving Services",
-      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800",
+      title: "Shipbuilding & New Construction",
+      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800",
       items: [
-        "Onshore Diving",
-        "Offshore Diving",
-        "Diving Training",
-        "Subsea Engineering & ROV Support"
+        "Hull fabrication & structural works",
+        "Outfitting and installation",
+        "Mechanical & piping integration",
+        "Electrical installation during construction",
+        "Block assembly and onboard execution"
       ],
-      description: "We provide expert commercial diving solutions for both onshore and offshore operations, backed by a team trained to work in high-risk environments. Our services include inspection, maintenance, and repair work below waterline, supported by modern ROV technology and certified training programs."
+      description: "We deliver comprehensive shipbuilding solutions from hull fabrication to final outfitting. Our expertise spans structural steel works, mechanical and electrical integration, and complete block assembly with precision onboard execution."
     },
+    {
+      id: 2,
+      title: "Turnkey Marine Engineering & Project Execution",
+      image: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800",
+      items: [
+        "Hull outfit packages",
+        "Electrical turnkey execution",
+        "Engineering supervision & manpower deployment",
+        "Integration of multi-discipline marine systems"
+      ],
+      description: "Our turnkey solutions provide end-to-end project execution including hull outfitting, complete electrical systems, and multi-discipline integration. We deploy skilled engineering teams for seamless supervision and delivery."
+    },
+    {
+      id: 3,
+      title: "Ship Repair & Maintenance",
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800",
+      items: [
+        "Mechanical repairs & overhauls",
+        "Structural steel repairs",
+        "Electrical troubleshooting & retrofit",
+        "Underwater and onboard maintenance",
+        "Valve overhaul, alignment, and system restoration"
+      ],
+      description: "We provide comprehensive ship repair and maintenance services including mechanical overhauls, structural repairs, electrical retrofits, and specialized underwater operations. Our team ensures vessel reliability through expert valve servicing and system restoration."
+    },
+
     {
       id: 2,
       title: "Marine & Civil Construction",
@@ -52,18 +79,7 @@ const ServicesPage = () => {
       ],
       description: "From propulsion to power management, we offer turnkey marine engineering services. Our expertise includes engine installations, system overhauls, mechanical maintenance, and electrical automation tailored to the maritime industry."
     },
-    {
-      id: 4,
-      title: "Fabrication & Maintenance",
-      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800",
-      items: [
-        "Welding & Fabrication (Hull & Outfit)",
-        "Pipe Fabrication & Installation",
-        "Hull Treatment & Tank Cleaning",
-        "Machining Services"
-      ],
-      description: "We support vessel lifecycle needs with advanced fabrication capabilities. Our services include precision machining, structural welding, pipe installations, and hull/tank treatment for improved longevity and performance."
-    },
+
     {
       id: 5,
       title: "Support Services",
@@ -73,13 +89,25 @@ const ServicesPage = () => {
         "Diving Equipment Rental"
       ],
       description: "To ensure seamless project execution, we offer skilled manpower solutions and reliable diving equipment rentals. Every resource provided adheres to industry safety and operational standards."
+    },
+    {
+      id: 1,
+      title: "Diving Services",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800",
+      items: [
+        "Onshore Diving",
+        "Offshore Diving",
+        "Diving Training",
+        "Subsea Engineering & ROV Support"
+      ],
+      description: "We provide expert commercial diving solutions for both onshore and offshore operations, backed by a team trained to work in high-risk environments. Our services include inspection, maintenance, and repair work below waterline, supported by modern ROV technology and certified training programs."
     }
   ];
 
   return (
     <div className="relative bg-slate-900">
       {/* Background Image with Overlay - Using absolute positioning instead of fixed */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${servicesBackground})`,
@@ -117,14 +145,14 @@ const ServicesPage = () => {
                   >
                     {/* Image */}
                     <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
-                      <img 
-                        src={service.image} 
+                      <img
+                        src={service.image}
                         alt={service.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
-                      
+
                       {/* Hover Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-cyan-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     </div>
@@ -135,7 +163,7 @@ const ServicesPage = () => {
                         {service.title}
                       </h3>
                       <p className="text-blue-300 text-xs sm:text-sm mt-1.5 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
-                        Click to learn more 
+                        Click to learn more
                         <svg className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
@@ -169,14 +197,14 @@ const ServicesPage = () => {
                 <div className="grid md:grid-cols-2 gap-0">
                   {/* Image */}
                   <div className="relative h-56 sm:h-64 md:h-auto">
-                    <img 
-                      src={selectedService.image} 
+                    <img
+                      src={selectedService.image}
                       alt={selectedService.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 to-transparent"></div>
-                    
+
                     {/* Floating Service Number */}
                     <div className="absolute top-4 sm:top-5 lg:top-6 left-4 sm:left-5 lg:left-6 w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-cyan-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-lg sm:text-xl lg:text-2xl font-bold shadow-xl">
                       {selectedService.id}
@@ -247,7 +275,7 @@ const ServicesPage = () => {
                   Our Services
                 </span>
               </h2>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {[
                   {

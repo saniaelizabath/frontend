@@ -49,7 +49,7 @@ const Footer = ({ setCurrentPage }) => {
             <h4 className="text-base md:text-lg text-white font-semibold mb-3 md:mb-4">Contact</h4>
             <ul className="space-y-2 text-sm md:text-base text-blue-200">
               <li>Email: hello@magmarine.in</li>
-              <li>Phone: 0484 312140</li>
+              <li>Phone: 0484 3142140</li>
             </ul>
           </div>
         </div>
