@@ -19,8 +19,9 @@ const NewsEventsPage = () => {
             id: item.id,
             title: item.title,
             description: item.description,
-            // ✅ Use API base URL instead of hardcoded domain
-            image: item.image ? `${API_BASE_URL}/${item.image}` : null,
+            // ✅ Backend stores as 'image_path' (e.g., "uploads/news/image.jpg")
+            // Construct full URL: API_BASE_URL + "/" + image_path
+            image: item.image_path ? `${API_BASE_URL}/${item.image_path}` : null,
             date: item.date,
           }))
         );

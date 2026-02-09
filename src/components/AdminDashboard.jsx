@@ -133,8 +133,9 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
           title: item.title,
           description: item.description,
           date: item.date,
-          // ✅ Use API base URL instead of hardcoded domain
-          image: item.image ? `${API_BASE_URL}/${item.image}` : "",
+          // ✅ Backend stores as 'image_path' (e.g., "uploads/news/image.jpg")
+          // Construct full URL: API_BASE_URL + "/" + image_path
+          image: item.image_path ? `${API_BASE_URL}/${item.image_path}` : "",
         }))
       );
     } catch (err) {
