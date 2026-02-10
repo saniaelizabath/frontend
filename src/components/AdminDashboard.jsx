@@ -125,8 +125,8 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     try {
       const res = await API.get("/news");
       // Get API base URL from environment or default
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
+     // const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace('/api', '');
       setNewsEvents(
         res.data.map((item) => ({
           id: item._id,

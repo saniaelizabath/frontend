@@ -6,8 +6,8 @@ const NewsEventsPage = () => {
   const [newsEvents, setNewsEvents] = useState([]);
 
   // Get API base URL from environment or default
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
+//  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+   const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace('/api','');
   // -------------------------
   // Fetch news from backend
   // -------------------------
