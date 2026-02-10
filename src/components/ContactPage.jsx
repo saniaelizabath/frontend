@@ -120,7 +120,7 @@ const ContactPage = () => {
             <div>
               <p className="text-sm uppercase tracking-wider mb-2 opacity-90">Phone</p>
               <a href="tel:0484312140" className="text-2xl md:text-3xl font-bold hover:text-cyan-300 transition-colors">
-                0484 312140
+                0484 3142140
               </a>
             </div>
             <div className="hidden md:block w-px h-16 bg-white/30"></div>
@@ -128,6 +128,7 @@ const ContactPage = () => {
               <p className="text-sm uppercase tracking-wider mb-2 opacity-90">Email</p>
               <a href="mailto:hello@magmarine.in" className="text-2xl md:text-3xl font-bold hover:text-cyan-300 transition-colors">
                 hello@magmarine.in
+                careers@magmarine.in
               </a>
             </div>
           </div>
