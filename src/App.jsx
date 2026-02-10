@@ -168,7 +168,7 @@ function App() {
         {/* Projects Page */}
         {currentPage === 'projects' && (
           <div className="w-full">
-            <Projects />
+            <Projects setCurrentPage={handlePageChange} />
           </div>
         )}
 

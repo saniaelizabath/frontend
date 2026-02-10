@@ -16,7 +16,7 @@ const LINK_ICONS = {
 };
 
 const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
-  const [activeTab, setActiveTab] = useState("news");
+  const [activeTab, setActiveTab] = useState("careers");
 
   const [editingNewsId, setEditingNewsId] = useState(null);
   const [editingCareerId, setEditingCareerId] = useState(null);
@@ -125,7 +125,7 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     try {
       const res = await API.get("/news");
       // Get API base URL from environment or default
-     // const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      // const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace('/api', '');
       setNewsEvents(
         res.data.map((item) => ({
@@ -715,10 +715,9 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
         </div>
 
         {/* TABS - Mobile Scrollable */}
-        <div className="max-w-7xl mx-auto mb-6 sm:mb-8">
-          <div className="flex gap-10 sm:gap-12 bg-slate-800/50 p-2 rounded-xl backdrop-blur-sm overflow-x-auto scrollbar-hide">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 bg-slate-800/50 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
             {[
-              { key: "news", label: "📰", fullLabel: "News & Events" },
               { key: "careers", label: "💼", fullLabel: "Careers" },
               { key: "employees", label: "👥", fullLabel: "Employees" },
               { key: "attendance", label: "📊", fullLabel: "Attendance" },
@@ -727,9 +726,9 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${activeTab === tab.key
-                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
-                  : "text-blue-300 hover:bg-slate-700/50"
+                className={`flex-shrink-0 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${activeTab === tab.key
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105"
+                    : "text-blue-300 hover:bg-slate-700/50 hover:scale-102"
                   }`}
               >
                 <span className="sm:hidden">{tab.label}</span>
