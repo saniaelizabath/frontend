@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import bg from '/backgrounds/portal.jpg';
+import bg from '/backgrounds/portal.webp';
 import API from '../api';
 
 const ContactPage = () => {

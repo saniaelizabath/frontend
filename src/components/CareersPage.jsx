@@ -1,7 +1,7 @@
 // src/components/CareersPage.jsx
 import { useEffect, useState, memo, useCallback } from "react";
 import API from "../api";
-import careersBackground from "/backgrounds/careers.jpeg";
+import careersBackground from "/backgrounds/careers.webp";
 
 const CareersPage = () => {
   const [careers, setCareers] = useState([]);

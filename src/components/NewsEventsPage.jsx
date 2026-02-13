@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import newsBackground from "/backgrounds/news.jpg";
+import newsBackground from "/backgrounds/news.webp";
 
 const NewsEventsPage = () => {
   const [textVisible, setTextVisible] = useState(false);
@@ -137,8 +137,8 @@ const NewsEventsPage = () => {
                     {/* Image 1 - Flip and reveal animation */}
                     <div
                       className={`group relative transition-all duration-1000 delay-200 ${imagesVisible
-                          ? 'opacity-100 translate-y-0 rotate-0'
-                          : 'opacity-0 translate-y-12 -rotate-6'
+                        ? 'opacity-100 translate-y-0 rotate-0'
+                        : 'opacity-0 translate-y-12 -rotate-6'
                         }`}
                       style={{ perspective: '1000px' }}
                     >
@@ -173,8 +173,8 @@ const NewsEventsPage = () => {
                     {/* Image 3 - New image below img1 */}
                     <div
                       className={`group relative transition-all duration-1000 delay-400 ${imagesVisible
-                          ? 'opacity-100 translate-y-0 rotate-0'
-                          : 'opacity-0 translate-y-12 rotate-3'
+                        ? 'opacity-100 translate-y-0 rotate-0'
+                        : 'opacity-0 translate-y-12 rotate-3'
                         }`}
                       style={{ perspective: '1000px' }}
                     >
@@ -211,8 +211,8 @@ const NewsEventsPage = () => {
                   {/* Right Column - Image 2 (full height) */}
                   <div
                     className={`group relative transition-all duration-1000 delay-600 ${imagesVisible
-                        ? 'opacity-100 translate-y-0 rotate-0'
-                        : 'opacity-0 translate-y-12 rotate-6'
+                      ? 'opacity-100 translate-y-0 rotate-0'
+                      : 'opacity-0 translate-y-12 rotate-6'
                       }`}
                     style={{ perspective: '1000px' }}
                   >

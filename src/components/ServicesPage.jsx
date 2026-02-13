@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import servicesBackground from '/backgrounds/services.jpg';
+import servicesBackground from '/backgrounds/services.webp';
 
 const ServicesPage = () => {
   const [selectedService, setSelectedService] = useState(null);

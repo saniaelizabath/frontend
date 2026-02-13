@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import logo from '/backgrounds/logonew.png';
+import logo from '/backgrounds/logonew.webp';
 
 const Header = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);

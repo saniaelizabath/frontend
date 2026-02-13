@@ -2,25 +2,25 @@
 
 
 import { useState, memo } from "react";
-import founderImage from "/backgrounds/ceo.jpeg";
+import founderImage from "/backgrounds/ceo.webp";
 import CircularGallery from './Circulargallery';
-import backgroundImage from "/backgrounds/ab.jpg";
+import backgroundImage from "/backgrounds/ab.webp";
 
 // Import all gallery images
-import img1 from "/aboutus/img1.jpeg";
-import img2 from "/aboutus/img2.jpeg";
-import img3 from "/aboutus/img3.jpeg";
-import img4 from "/aboutus/img4.jpeg";
-import img5 from "/aboutus/img5.jpeg";
-import img6 from "/aboutus/img6.jpeg";
-import img7 from "/aboutus/img7.jpeg";
-import img8 from "/aboutus/img8.jpeg";
-import img9 from "/aboutus/img9.jpeg";
-import img10 from "/aboutus/img10.jpeg";
-import img11 from "/aboutus/img11.jpeg";
-import img12 from "/aboutus/img12.jpeg";
-import img13 from "/aboutus/img13.jpeg";
-import img14 from "/aboutus/img14.jpeg";
+import img1 from "/aboutus/img1.webp";
+import img2 from "/aboutus/img2.webp";
+import img3 from "/aboutus/img3.webp";
+import img4 from "/aboutus/img4.webp";
+import img5 from "/aboutus/img5.webp";
+import img6 from "/aboutus/img6.webp";
+import img7 from "/aboutus/img7.webp";
+import img8 from "/aboutus/img8.webp";
+import img9 from "/aboutus/img9.webp";
+import img10 from "/aboutus/img10.webp";
+import img11 from "/aboutus/img11.webp";
+import img12 from "/aboutus/img12.webp";
+import img13 from "/aboutus/img13.webp";
+import img14 from "/aboutus/img14.webp";
 
 const AboutUsPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
