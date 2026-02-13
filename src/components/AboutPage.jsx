@@ -1,7 +1,7 @@
 
 
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import founderImage from "/backgrounds/ceo.jpeg";
 import CircularGallery from './Circulargallery';
 import backgroundImage from "/backgrounds/ab.jpg";
@@ -24,7 +24,7 @@ import img14 from "/aboutus/img14.jpeg";
 
 const AboutUsPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  
+
   // Format images for CircularGallery component
   const galleryItems = [
     { image: img1, text: '' },
@@ -44,7 +44,7 @@ const AboutUsPage = () => {
   ];
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-gradient-to-b from-slate-200 via-slate-100 to-blue-50 pt-24 pb-12 sm:pt-28 md:pt-32 sm:pb-16 md:pb-20"
       style={{
         backgroundImage: `url(${backgroundImage})`,
@@ -54,7 +54,7 @@ const AboutUsPage = () => {
       }}
     >
       <div className="container mx-auto px-4 sm:px-6">
-        
+
         {/* Page Header */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-3 sm:mb-4 tracking-tight">
@@ -70,7 +70,7 @@ const AboutUsPage = () => {
 
         <div className="max-w-5xl mx-auto mb-10 sm:mb-12 md:mb-14">
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-cyan-500/20 overflow-hidden shadow-2xl">
-            
+
             {/* Section Title */}
             <div className="bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border-b border-cyan-500/20 px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5">
               <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white flex items-center gap-2 sm:gap-3">
@@ -83,7 +83,7 @@ const AboutUsPage = () => {
 
             <div className="p-4 sm:p-6 md:p-8">
               <div className="grid md:grid-cols-5 gap-4 sm:gap-6 md:gap-8 items-start">
-                
+
                 {/* Founder Image */}
                 <div className="md:col-span-2">
                   <div className="relative group">
@@ -93,11 +93,13 @@ const AboutUsPage = () => {
                         src={founderImage}
                         alt="Hrishikesh Anilkumar - Founder & Managing Director"
                         className="w-full rounded-lg sm:rounded-xl shadow-2xl border-2 sm:border-4 border-slate-300/10"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
                     </div>
                   </div>
-                  
+
                   {/* Founder Info Card */}
                   <div className="mt-3 sm:mt-4 md:mt-6 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 backdrop-blur-sm border border-cyan-500/20 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 text-center">
                     <h3 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-2">
@@ -119,15 +121,15 @@ const AboutUsPage = () => {
                       Mag Marine was founded with a clear belief — that the marine engineering sector in India requires not just skilled execution, but structured leadership, accountable systems, and long-term institutional thinking.
                     </p>
 
-                    
+
 
                     <p className="text-xs sm:text-sm md:text-base">
-                      My vision is to develop Mag Marine into a leading marine engineering organisation that contributes meaningfully to India's defence and shipbuilding ecosystem. 
-                    </p> 
+                      My vision is to develop Mag Marine into a leading marine engineering organisation that contributes meaningfully to India's defence and shipbuilding ecosystem.
+                    </p>
 
                     <p className="text-xs sm:text-sm md:text-base">
-                      With India's growing focus on indigenous shipbuilding, defence self-reliance, and the Make in India initiative, I strongly believe this is a defining period for the marine sector. 
-                    </p> 
+                      With India's growing focus on indigenous shipbuilding, defence self-reliance, and the Make in India initiative, I strongly believe this is a defining period for the marine sector.
+                    </p>
 
                     <div className="bg-gradient-to-r from-cyan-600/10 to-blue-600/10 border-l-3 sm:border-l-4 border-cyan-500 rounded-r-lg sm:rounded-r-xl p-3 sm:p-4 md:p-6 my-3 sm:my-4 md:my-6">
                       <p className="text-white font-semibold text-xs sm:text-sm md:text-base lg:text-lg">
@@ -178,16 +180,16 @@ const AboutUsPage = () => {
 
           {/* CircularGallery Component with improved mobile responsiveness */}
           <div className="w-full overflow-hidden touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div 
+            <div
               className="bg-transparent mx-auto"
-              style={{ 
+              style={{
                 height: '400px',
                 maxWidth: '100%',
                 transform: 'translateZ(0)',
                 willChange: 'transform'
               }}
             >
-              <CircularGallery 
+              <CircularGallery
                 items={galleryItems}
                 bend={0.8}
                 textColor="#0e7490"
@@ -198,7 +200,7 @@ const AboutUsPage = () => {
               />
             </div>
           </div>
-          
+
           {/* Info Badge */}
           <div className="text-center mt-6 sm:mt-8">
             <div className="inline-flex items-center gap-2 text-slate-700 text-xs sm:text-sm bg-white/90 backdrop-blur-sm px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full border border-cyan-200 shadow-lg font-semibold">
@@ -219,7 +221,7 @@ const AboutUsPage = () => {
               Core Values
             </span>
           </h2>
-          
+
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {[
               {
@@ -287,6 +289,8 @@ const AboutUsPage = () => {
                 src={selectedImage}
                 alt="Gallery"
                 className="max-w-full max-h-[90vh] rounded-lg sm:rounded-xl shadow-2xl border-2 sm:border-4 border-cyan-500/50"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
@@ -329,4 +333,4 @@ const AboutUsPage = () => {
   );
 };
 
-export default AboutUsPage;
+export default memo(AboutUsPage);

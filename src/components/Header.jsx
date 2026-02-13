@@ -86,10 +86,10 @@ const Header = ({ currentPage, setCurrentPage }) => {
 
       {/* Side Menu with Glassmorphism and Stacked Card Animation */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 z-40 transition-all duration-500 ease-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 right-0 h-full w-full sm:w-96 md:w-[420px] z-40 transition-all duration-500 ease-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
       >
-        <div className="relative h-full w-full pt-20 px-6 pb-6">
+        <div className="relative h-full w-full pt-24 px-4 sm:px-6 md:px-8 pb-6">
           {/* Stacked Cards */}
           <div className="relative h-full">
             {navItems.map((item, index) => {
@@ -102,12 +102,12 @@ const Header = ({ currentPage, setCurrentPage }) => {
                   key={index}
                   onClick={() => handleNavClick(item.id)}
                   className={`absolute top-0 left-0 w-full rounded-2xl transition-all duration-700 ease-out cursor-pointer group ${isActive
-                      ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30'
-                      : 'bg-slate-900/40 backdrop-blur-xl text-gray-300 hover:bg-slate-800/60 border border-white/10'
+                    ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30'
+                    : 'bg-slate-900/40 backdrop-blur-xl text-gray-300 hover:bg-slate-800/60 border border-white/10'
                     }`}
                   style={{
                     transform: menuOpen
-                      ? `translateY(${index * 90}px) scale(${1 - index * 0.02}) translateZ(0)`
+                      ? `translateY(${index * 100}px) scale(${1 - index * 0.015}) translateZ(0)`
                       : `translateY(${index * 5}px) scale(${1 - index * 0.05}) translateZ(0)`,
                     opacity: menuOpen ? 1 : 0,
                     zIndex: totalItems - index,
@@ -119,16 +119,16 @@ const Header = ({ currentPage, setCurrentPage }) => {
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive && menuOpen) {
-                      e.currentTarget.style.transform = `translateY(${index * 90 - 10}px) scale(${1 - index * 0.02 + 0.03}) translateZ(0)`;
+                      e.currentTarget.style.transform = `translateY(${index * 100 - 10}px) scale(${1 - index * 0.015 + 0.03}) translateZ(0)`;
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive && menuOpen) {
-                      e.currentTarget.style.transform = `translateY(${index * 90}px) scale(${1 - index * 0.02}) translateZ(0)`;
+                      e.currentTarget.style.transform = `translateY(${index * 100}px) scale(${1 - index * 0.015}) translateZ(0)`;
                     }
                   }}
                 >
-                  <div className="px-8 py-6 flex items-center justify-between">
+                  <div className="px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between">
                     <span className="text-lg font-semibold tracking-wide transition-transform duration-300 group-hover:translate-x-2">
                       {item.name}
                     </span>

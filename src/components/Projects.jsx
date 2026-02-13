@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo, useMemo } from 'react';
 
 const Projects = ({ setCurrentPage }) => {
     const [activeYear, setActiveYear] = useState(2022);
     const [visibleMilestones, setVisibleMilestones] = useState(new Set());
     const observerRef = useRef(null);
 
-    const timelineData = {
+    const timelineData = useMemo(() => ({
         2022: {
             title: "Foundation & Market Entry",
             subtitle: "Company Founded: Mag Engineering Services",
@@ -162,7 +162,7 @@ const Projects = ({ setCurrentPage }) => {
                 }
             ]
         }
-    };
+    }), []);
 
     // Intersection Observer for scroll animations
     useEffect(() => {
@@ -414,4 +414,4 @@ const Projects = ({ setCurrentPage }) => {
     );
 };
 
-export default Projects;
+export default memo(Projects);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import ship from '../assets/videos/ship.mp4';
 import sailingShip from '../assets/videos/sailing-ship.mp4';
 import shipInside from '../assets/videos/ship-inside.mp4';
@@ -65,10 +65,10 @@ const HeroSection = ({ setCurrentPage }) => {
           autoPlay
           muted
           playsInline
+          preload="auto"
           onEnded={activeVideo === 'A' ? handleVideoEnd : undefined}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            activeVideo === 'A' && !isTransitioning ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${activeVideo === 'A' && !isTransitioning ? 'opacity-100' : 'opacity-0'
+            }`}
         />
 
         {/* Video B */}
@@ -76,10 +76,10 @@ const HeroSection = ({ setCurrentPage }) => {
           ref={videoBRef}
           muted
           playsInline
+          preload="metadata"
           onEnded={activeVideo === 'B' ? handleVideoEnd : undefined}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            activeVideo === 'B' && !isTransitioning ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${activeVideo === 'B' && !isTransitioning ? 'opacity-100' : 'opacity-0'
+            }`}
         />
       </div>
 
@@ -104,10 +104,10 @@ const HeroSection = ({ setCurrentPage }) => {
             </p>
 
             <div className="mt-10 animate-slide-up-delay-2">
-              
 
 
-              <button 
+
+              <button
                 onClick={() => setCurrentPage("services")}
 
 
@@ -124,11 +124,10 @@ const HeroSection = ({ setCurrentPage }) => {
         {videos.map((_, index) => (
           <div
             key={index}
-            className={`h-1 rounded-full transition-all duration-500 ${
-              index === currentVideoIndex
+            className={`h-1 rounded-full transition-all duration-500 ${index === currentVideoIndex
                 ? 'w-12 bg-cyan-400'
                 : 'w-8 bg-white/30 hover:bg-white/50 cursor-pointer'
-            }`}
+              }`}
             onClick={() => {
               setIsTransitioning(true);
               setTimeout(() => {
@@ -186,4 +185,4 @@ const HeroSection = ({ setCurrentPage }) => {
   );
 };
 
-export default HeroSection;
+export default memo(HeroSection);

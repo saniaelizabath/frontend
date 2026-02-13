@@ -72,10 +72,10 @@
 //           className="absolute inset-0 w-full h-full object-cover"
 //           loading="lazy"
 //         />
-        
+
 //         {/* Overlay for better text readability */}
 //         <div className="absolute inset-0 bg-white/20"></div>
-        
+
 //         {/* Optional: Additional gradient overlay for depth */}
 //         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30"></div>
 //       </div>
@@ -188,7 +188,7 @@
 
 
 // src/components/Accreditation.jsx
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, memo } from 'react';
 import finalCertImage from '/awlogo/finalcert.webp';
 import isoImage from '/awlogo/iso.png';
 import smissionImage from '/awlogo/smission.png';
@@ -206,7 +206,7 @@ const Accreditation = () => {
           setIsVisible(true);
         }
       },
-      { 
+      {
         threshold: 0.1,
         rootMargin: '-50px'
       }
@@ -247,7 +247,7 @@ const Accreditation = () => {
   ];
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       id="accreditation"
       className="relative overflow-hidden min-h-screen flex items-center pt-20 pb-12 sm:py-20 lg:py-24"
@@ -261,46 +261,41 @@ const Accreditation = () => {
           className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
-        
+
         {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-white/20"></div>
-        
+
         {/* Optional: Additional gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30"></div>
       </div>
 
-      <div 
-        className={`container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 transition-all duration-1000 ease-out ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+      <div
+        className={`container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
       >
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h2 
-            className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-slate-800 mb-2 sm:mb-3 tracking-wide transition-all duration-1000 delay-100 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+          <h2
+            className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-slate-800 mb-2 sm:mb-3 tracking-wide transition-all duration-1000 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             style={{ fontFamily: 'Georgia, serif' }}
           >
             <span className="text-cyan-900">ACCREDITATION &</span> <span className="text-cyan-700">CERTIFICATION</span>
           </h2>
-          <div 
-            className={`w-16 sm:w-24 h-0.5 bg-blue-700 mx-auto mt-3 sm:mt-5 mb-3 sm:mb-5 transition-all duration-1000 delay-200 ${
-              isVisible ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
-            }`}
+          <div
+            className={`w-16 sm:w-24 h-0.5 bg-blue-700 mx-auto mt-3 sm:mt-5 mb-3 sm:mb-5 transition-all duration-1000 delay-200 ${isVisible ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+              }`}
           />
-          <p 
-            className={`text-slate-700 text-sm sm:text-lg mb-1.5 sm:mb-3 font-light transition-all duration-1000 delay-300 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+          <p
+            className={`text-slate-700 text-sm sm:text-lg mb-1.5 sm:mb-3 font-light transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             style={{ fontFamily: 'Georgia, serif' }}
           >
             Recognized and certified by leading institutions
           </p>
-          <p 
-            className={`text-blue-800 text-base sm:text-xl font-light italic transition-all duration-1000 delay-400 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+          <p
+            className={`text-blue-800 text-base sm:text-xl font-light italic transition-all duration-1000 delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             style={{ fontFamily: 'Georgia, serif' }}
           >
             <span className="text-cyan-900">Where marine challenges meet reliable solutions.</span>
@@ -312,9 +307,8 @@ const Accreditation = () => {
           {certifications.map((cert, index) => (
             <div
               key={index}
-              className={`group relative bg-white/75 backdrop-blur-md rounded-xl sm:rounded-2xl border border-blue-300/40 hover:border-blue-500/70 transition-all duration-500 overflow-hidden hover:shadow-2xl hover:shadow-blue-300/50 transform hover:-translate-y-2 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
+              className={`group relative bg-white/75 backdrop-blur-md rounded-xl sm:rounded-2xl border border-blue-300/40 hover:border-blue-500/70 transition-all duration-500 overflow-hidden hover:shadow-2xl hover:shadow-blue-300/50 transform hover:-translate-y-2 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
               style={{ transitionDelay: `${500 + index * 150}ms` }}
             >
               {/* Content */}
@@ -326,13 +320,14 @@ const Accreditation = () => {
                     alt={cert.title}
                     className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
 
                 {/* Text Content - Compressed on mobile */}
                 <div className="flex-1 flex flex-col">
-                  <h3 
-                    className="text-base sm:text-lg font-semibold text-slate-800 mb-1 sm:mb-2 group-hover:text-blue-700 transition-colors" 
+                  <h3
+                    className="text-base sm:text-lg font-semibold text-slate-800 mb-1 sm:mb-2 group-hover:text-blue-700 transition-colors"
                     style={{ fontFamily: 'Georgia, serif' }}
                   >
                     {cert.title}
@@ -340,8 +335,8 @@ const Accreditation = () => {
                   <p className="text-blue-600 text-xs sm:text-sm mb-1.5 sm:mb-3 font-light">
                     {cert.subtitle}
                   </p>
-                  <p 
-                    className="text-slate-600 text-xs sm:text-sm leading-relaxed font-light" 
+                  <p
+                    className="text-slate-600 text-xs sm:text-sm leading-relaxed font-light"
                     style={{ fontFamily: 'Georgia, serif' }}
                   >
                     {cert.description}
@@ -353,17 +348,16 @@ const Accreditation = () => {
         </div>
 
         {/* Bottom Description - Compressed on mobile */}
-        <div 
-          className={`max-w-5xl mx-auto transition-all duration-1000 delay-700 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        <div
+          className={`max-w-5xl mx-auto transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
         >
           <div className="bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl border border-blue-300/40 p-3.5 sm:p-5 lg:p-6">
-            <p 
-              className="text-slate-700 text-xs sm:text-base leading-relaxed font-light text-center" 
+            <p
+              className="text-slate-700 text-xs sm:text-base leading-relaxed font-light text-center"
               style={{ fontFamily: 'Georgia, serif' }}
             >
-              Our certifications demonstrate our commitment to quality, safety, and continuous improvement in all our marine services. 
+              Our certifications demonstrate our commitment to quality, safety, and continuous improvement in all our marine services.
               We adhere to international standards and best practices, ensuring excellence and reliability.
             </p>
           </div>
@@ -373,4 +367,4 @@ const Accreditation = () => {
   );
 };
 
-export default Accreditation;
+export default memo(Accreditation);

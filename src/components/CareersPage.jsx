@@ -1,5 +1,5 @@
 // src/components/CareersPage.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo, useCallback } from "react";
 import API from "../api";
 import careersBackground from "/backgrounds/careers.jpeg";
 
@@ -24,14 +24,14 @@ const CareersPage = () => {
       });
   }, []);
 
-  const handleApply = (jobTitle) => {
+  const handleApply = useCallback((jobTitle) => {
     // Open user's default email client with pre-filled email
     const subject = encodeURIComponent(`Application for ${jobTitle}`);
     const body = encodeURIComponent(
       `Dear Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position at Mag Marine Services.\n\nPlease find my resume attached to this email.\n\nBest regards,`
     );
     window.location.href = `mailto:careers@magmarine.in?subject=${subject}&body=${body}`;
-  };
+  }, []);
 
   return (
     <div className="relative bg-slate-900">
@@ -294,4 +294,4 @@ const CareersPage = () => {
   );
 };
 
-export default CareersPage;
+export default memo(CareersPage);

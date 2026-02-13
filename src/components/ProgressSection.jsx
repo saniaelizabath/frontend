@@ -54,27 +54,27 @@
 //     class Particle {
 //       constructor(index) {
 //         this.index = index;
-        
+
 //         // Circular orbit setup - concentrated in the middle
 //         this.orbitRadius = config.minOrbitRadius + Math.random() * (config.maxOrbitRadius - config.minOrbitRadius);
 //         this.orbitAngle = (index / particleCount) * Math.PI * 2 + Math.random() * 0.5;
 //         this.orbitSpeed = (Math.random() * 0.4 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
-        
+
 //         // Calculate position on circular path
 //         this.baseX = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
 //         this.baseY = centerY + Math.sin(this.orbitAngle) * this.orbitRadius;
-        
+
 //         this.x = this.baseX;
 //         this.y = this.baseY;
 //         this.vx = 0;
 //         this.vy = 0;
-        
+
 //         // Visual properties
 //         this.size = config.particleSize + (Math.random() * config.particleVariance - config.particleVariance / 2);
 //         this.rotation = this.orbitAngle;
 //         this.pulseOffset = Math.random() * Math.PI * 2;
 //         this.depth = Math.random();
-        
+
 //         // Swimming animation
 //         this.swimOffset = Math.random() * Math.PI * 2;
 //       }
@@ -83,52 +83,52 @@
 //         // Smooth pulse effect
 //         const pulse = Math.sin(time * config.pulseSpeed + this.pulseOffset) * 0.2 + 0.9;
 //         const size = this.size * pulse;
-        
+
 //         // Color with opacity
 //         const alpha = 0.5 + this.depth * 0.3;
 //         const rgb = this.hexToRgb(config.color);
-        
+
 //         ctx.save();
 //         ctx.translate(this.x, this.y);
 //         ctx.rotate(this.rotation);
-        
+
 //         // Smooth capsule shape
 //         ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
 //         ctx.beginPath();
-        
+
 //         const width = size * 3.5;
 //         const height = size;
 //         ctx.ellipse(0, 0, width, height, 0, 0, Math.PI * 2);
 //         ctx.fill();
-        
+
 //         // Subtle glow
 //         ctx.shadowBlur = 12;
 //         ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`;
 //         ctx.fill();
-        
+
 //         ctx.restore();
 //       }
 
 //       update() {
 //         // Smooth circular orbit movement
 //         this.orbitAngle += this.orbitSpeed * 0.008;
-        
+
 //         // Gentle wave motion
 //         const wave = Math.sin(time * config.waveSpeed + this.swimOffset) * config.waveAmplitude * 15;
-        
+
 //         // Target position on circular path
 //         const targetX = centerX + Math.cos(this.orbitAngle) * (this.orbitRadius + wave);
 //         const targetY = centerY + Math.sin(this.orbitAngle) * (this.orbitRadius + wave);
-        
+
 //         // Mouse interaction - ULTRA SMOOTH flee behavior
 //         let fleeX = 0;
 //         let fleeY = 0;
-        
+
 //         if (mouse.x !== null && mouse.y !== null) {
 //           let dx = this.x - mouse.x;
 //           let dy = this.y - mouse.y;
 //           let distance = Math.sqrt(dx * dx + dy * dy);
-          
+
 //           if (distance < mouse.radius && distance > 0) {
 //             // Super smooth repulsion with gradual falloff
 //             let force = ((mouse.radius - distance) / mouse.radius);
@@ -138,27 +138,27 @@
 //             fleeY = Math.sin(angle) * force;
 //           }
 //         }
-        
+
 //         // Ultra smooth lerp towards target position
 //         this.vx += (targetX - this.x) * config.returnSpeed + fleeX * 0.5;
 //         this.vy += (targetY - this.y) * config.returnSpeed + fleeY * 0.5;
-        
+
 //         // Enhanced smooth damping for fluid motion
 //         this.vx *= config.mouseDamping;
 //         this.vy *= config.mouseDamping;
-        
+
 //         // Update position
 //         this.x += this.vx;
 //         this.y += this.vy;
-        
+
 //         // Ultra smooth rotation to face movement direction
 //         const targetRotation = Math.atan2(this.vy, this.vx);
 //         let rotDiff = targetRotation - this.rotation;
-        
+
 //         // Normalize angle difference
 //         while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
 //         while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
-        
+
 //         this.rotation += rotDiff * 0.08;
 //       }
 
@@ -182,7 +182,7 @@
 //     function animate() {
 //       ctx.clearRect(0, 0, canvas.width, canvas.height);
 //       ctx.shadowBlur = 0;
-      
+
 //       time += 0.016;
 
 //       // Sort by depth for proper layering
@@ -281,7 +281,7 @@
 
 
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import waterViewImage from '../images/water-view.jpg'; // Proper import for Vercel
 
 const ProgressSection = () => {
@@ -289,16 +289,18 @@ const ProgressSection = () => {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const animationRef = useRef(null);
 
   // Check for mobile devices
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -310,10 +312,26 @@ const ProgressSection = () => {
           setIsVisible(true);
         }
       },
-      { 
+      {
         threshold: 0.2, // Trigger when 20% visible
         rootMargin: '-50px' // Slight delay for better effect
       }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Intersection Observer to pause animation when not in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
     );
 
     if (sectionRef.current) {
@@ -361,27 +379,27 @@ const ProgressSection = () => {
     class Particle {
       constructor(index) {
         this.index = index;
-        
+
         // Circular orbit setup - concentrated in the middle
         this.orbitRadius = config.minOrbitRadius + Math.random() * (config.maxOrbitRadius - config.minOrbitRadius);
         this.orbitAngle = (index / particleCount) * Math.PI * 2 + Math.random() * 0.5;
         this.orbitSpeed = (Math.random() * 0.4 + 0.3) * (Math.random() > 0.5 ? 1 : -1);
-        
+
         // Calculate position on circular path
         this.baseX = centerX + Math.cos(this.orbitAngle) * this.orbitRadius;
         this.baseY = centerY + Math.sin(this.orbitAngle) * this.orbitRadius;
-        
+
         this.x = this.baseX;
         this.y = this.baseY;
         this.vx = 0;
         this.vy = 0;
-        
+
         // Visual properties
         this.size = config.particleSize + (Math.random() * config.particleVariance - config.particleVariance / 2);
         this.rotation = this.orbitAngle;
         this.pulseOffset = Math.random() * Math.PI * 2;
         this.depth = Math.random();
-        
+
         // Swimming animation
         this.swimOffset = Math.random() * Math.PI * 2;
       }
@@ -390,54 +408,54 @@ const ProgressSection = () => {
         // Smooth pulse effect
         const pulse = Math.sin(time * config.pulseSpeed + this.pulseOffset) * 0.2 + 0.9;
         const size = this.size * pulse;
-        
+
         // Color with opacity
         const alpha = 0.5 + this.depth * 0.3;
         const rgb = this.hexToRgb(config.color);
-        
+
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
-        
+
         // Smooth capsule shape
         ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
         ctx.beginPath();
-        
+
         const width = size * 3.5;
         const height = size;
         ctx.ellipse(0, 0, width, height, 0, 0, Math.PI * 2);
         ctx.fill();
-        
+
         // Subtle glow (reduce on mobile for performance)
         if (!isMobile) {
           ctx.shadowBlur = 12;
           ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`;
           ctx.fill();
         }
-        
+
         ctx.restore();
       }
 
       update() {
         // Smooth circular orbit movement
         this.orbitAngle += this.orbitSpeed * 0.008;
-        
+
         // Gentle wave motion
         const wave = Math.sin(time * config.waveSpeed + this.swimOffset) * config.waveAmplitude * 15;
-        
+
         // Target position on circular path
         const targetX = centerX + Math.cos(this.orbitAngle) * (this.orbitRadius + wave);
         const targetY = centerY + Math.sin(this.orbitAngle) * (this.orbitRadius + wave);
-        
+
         // Mouse interaction - ULTRA SMOOTH flee behavior
         let fleeX = 0;
         let fleeY = 0;
-        
+
         if (mouse.x !== null && mouse.y !== null) {
           let dx = this.x - mouse.x;
           let dy = this.y - mouse.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < mouse.radius && distance > 0) {
             // Super smooth repulsion with gradual falloff
             let force = ((mouse.radius - distance) / mouse.radius);
@@ -447,27 +465,27 @@ const ProgressSection = () => {
             fleeY = Math.sin(angle) * force;
           }
         }
-        
+
         // Ultra smooth lerp towards target position
         this.vx += (targetX - this.x) * config.returnSpeed + fleeX * 0.5;
         this.vy += (targetY - this.y) * config.returnSpeed + fleeY * 0.5;
-        
+
         // Enhanced smooth damping for fluid motion
         this.vx *= config.mouseDamping;
         this.vy *= config.mouseDamping;
-        
+
         // Update position
         this.x += this.vx;
         this.y += this.vy;
-        
+
         // Ultra smooth rotation to face movement direction
         const targetRotation = Math.atan2(this.vy, this.vx);
         let rotDiff = targetRotation - this.rotation;
-        
+
         // Normalize angle difference
         while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
         while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
-        
+
         this.rotation += rotDiff * 0.08;
       }
 
@@ -489,9 +507,14 @@ const ProgressSection = () => {
     }
 
     function animate() {
+      if (!isInView) {
+        animationRef.current = requestAnimationFrame(animate);
+        return; // Skip rendering when not in view
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.shadowBlur = 0;
-      
+
       time += 0.016;
 
       // Sort by depth for proper layering
@@ -502,7 +525,7 @@ const ProgressSection = () => {
         particles[i].draw();
       }
 
-      requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     }
 
     const handleMouseMove = (e) => {
@@ -538,25 +561,28 @@ const ProgressSection = () => {
     animate();
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('touchmove', handleTouchMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('touchend', handleMouseLeave);
       window.removeEventListener('resize', handleResize);
     };
-  }, [isMobile]);
+  }, [isMobile, isInView]);
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       id="progress-section"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background Image - Properly imported and blurred */}
       <div className="absolute inset-0 z-0">
-        <img 
+        <img
           src={waterViewImage}
-          alt="Water view background" 
+          alt="Water view background"
           className="w-full h-full object-cover"
           loading="lazy"
         />
@@ -572,40 +598,35 @@ const ProgressSection = () => {
       ></canvas>
 
       {/* Content with smooth scroll animation */}
-      <div className={`relative z-20 container mx-auto px-4 sm:px-6 py-12 sm:py-20 transition-all duration-1000 ease-out ${
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
+      <div className={`relative z-20 container mx-auto px-4 sm:px-6 py-12 sm:py-20 transition-all duration-1000 ease-out ${isVisible
+          ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-16'
-      }`}>
+        }`}>
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 sm:mb-8 tracking-tight drop-shadow-lg transition-all duration-1000 delay-200 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}>
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 sm:mb-8 tracking-tight drop-shadow-lg transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}>
             Driven by{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-blue-400">
               Dedication
             </span>
           </h2>
-          
+
           <div className="space-y-4">
-            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-300 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}>
-              At <strong>Mag Marine Services</strong>, our progress is driven by the dedication of our team and the trust of our partners. 
+            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}>
+              At <strong>Mag Marine Services</strong>, our progress is driven by the dedication of our team and the trust of our partners.
               Their continued support has helped us grow rapidly and build a strong presence in the marine sector.
             </p>
-            
-            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-400 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}>
-              We are expanding our operations and capabilities to meet the evolving needs of the industry. 
+
+            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}>
+              We are expanding our operations and capabilities to meet the evolving needs of the industry.
               With a focus on quality, efficiency, and innovation, we aim to deliver even greater value to our clients.
             </p>
-            
-            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-500 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}>
-              As we move forward, we remain committed to progress, adaptability, and excellence—while staying true to 
+
+            <p className={`text-sm sm:text-base md:text-lg text-white leading-relaxed drop-shadow-md transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}>
+              As we move forward, we remain committed to progress, adaptability, and excellence—while staying true to
               the values that have shaped our journey so far.
             </p>
           </div>
@@ -615,4 +636,4 @@ const ProgressSection = () => {
   );
 };
 
-export default ProgressSection;
+export default memo(ProgressSection);
