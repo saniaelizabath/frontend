@@ -27,7 +27,7 @@ const EmployeeLoginPage = ({ setCurrentPage, selectedEmployee, setLoggedInEmploy
 
       // Store logged in employee info
       setLoggedInEmployee(response.data.employee);
-      
+
       // Redirect to employee dashboard
       setCurrentPage(`employee-dashboard-${selectedEmployee.id}`);
     } catch (err) {

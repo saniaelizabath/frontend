@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import API from '../api';
 
 // ─────────────────────────────────────────
@@ -17,7 +17,21 @@ const LINK_ICONS = {
   approved_pr_url: "✅",
 };
 
+const NAVBAR_OPTIONS = [
+  "Home",
+  "About Us",
+  "Services",
+  "Projects",
+  "Portal",
+  "Contact Us",
+  "News & Events",
+  "Careers",
+];
+
 const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
+  const logoutInProgressRef = useRef(false);
+  const logoutMarkedRef = useRef(false);
+
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -93,6 +107,62 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
   useEffect(() => {
     fetchAttendance();
   }, [filterType, customDate, customWeekStart, customWeekEnd, selectedMonth, selectedYear]);
+
+  const markEmployeeLogout = async () => {
+    if (logoutMarkedRef.current || logoutInProgressRef.current) return;
+
+    logoutInProgressRef.current = true;
+    try {
+      const formData = new FormData();
+      formData.append("employee_id", loggedInEmployee.id);
+
+      await API.post("/employee/logout", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      logoutMarkedRef.current = true;
+    } catch (err) {
+      console.error("Failed to mark employee logout:", err);
+    } finally {
+      logoutInProgressRef.current = false;
+    }
+  };
+
+  useEffect(() => {
+    const handleNavbarOptionClick = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const navButton = target.closest("button");
+      const isHeaderShortcut = !!target.closest("header .cursor-pointer");
+
+      let isNavbarOption = false;
+      if (navButton) {
+        if (navButton.getAttribute("aria-label") === "Toggle menu") return;
+        const buttonText = (navButton.textContent || "").replace(/\s+/g, " ").trim();
+        isNavbarOption = NAVBAR_OPTIONS.some((label) => buttonText.includes(label));
+      }
+
+      if (!isNavbarOption && !isHeaderShortcut) return;
+
+      const shouldLogout = window.confirm("Log out from your portal?");
+      if (!shouldLogout) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
+        return;
+      }
+
+      markEmployeeLogout();
+    };
+
+    document.addEventListener("click", handleNavbarOptionClick, true);
+    return () => {
+      document.removeEventListener("click", handleNavbarOptionClick, true);
+    };
+  }, [loggedInEmployee.id]);
 
   // Helper function to normalize dates to YYYY-MM-DD format in local timezone
   const normalizeDate = (date) => {
@@ -286,7 +356,8 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await markEmployeeLogout();
     setCurrentPage('employee-portal');
   };
 

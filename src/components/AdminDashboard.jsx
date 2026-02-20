@@ -44,6 +44,8 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     password: "",
   });
   const [editingEmployeeId, setEditingEmployeeId] = useState(null);
+  const [employeeSessions, setEmployeeSessions] = useState([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
 
   // Attendance states
   const [attendanceData, setAttendanceData] = useState(null);
@@ -168,6 +170,19 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     }
   };
 
+  const loadEmployeeSessions = async () => {
+    setLoadingSessions(true);
+    try {
+      const res = await API.get("/employee-sessions");
+      setEmployeeSessions(res.data);
+    } catch (err) {
+      console.error("Error loading employee sessions:", err);
+      setEmployeeSessions([]);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
+
   const loadLinksConfig = async () => {
     try {
       const res = await API.get("/employee-links/config");
@@ -229,9 +244,16 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     loadNews();
     loadCareers();
     loadEmployees();
+    loadEmployeeSessions();
     loadLinksConfig();
     loadAdminLinks();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "employees") {
+      loadEmployeeSessions();
+    }
+  }, [activeTab]);
 
   // =========================
   // EMPLOYEE MANAGEMENT
@@ -690,6 +712,20 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
     });
   };
 
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   // =========================
   // UI
   // =========================
@@ -959,6 +995,91 @@ const AdminDashboard = ({ newsEvents, setNewsEvents, careers, setCareers }) => {
                   ))
                 )}
               </div>
+            </div>
+
+            {/* Employee Session History */}
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-cyan-500/20">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                <h3 className="text-xl sm:text-2xl font-bold text-white">🕒 Employee Session History</h3>
+                <button
+                  type="button"
+                  onClick={loadEmployeeSessions}
+                  className="px-3 py-2 bg-cyan-600/20 border border-cyan-500/40 text-cyan-300 rounded-lg hover:bg-cyan-600/30 transition-all duration-300 text-xs sm:text-sm font-semibold"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {loadingSessions ? (
+                <div className="text-center py-8 text-slate-400 text-sm">Loading session history...</div>
+              ) : employeeSessions.length === 0 ? (
+                <div className="text-center py-8 text-slate-400 text-sm">No employee session records found.</div>
+              ) : (
+                <>
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-700">
+                          <th className="text-left py-3 px-4 text-cyan-300 font-semibold">Employee</th>
+                          <th className="text-left py-3 px-4 text-cyan-300 font-semibold">Login Time</th>
+                          <th className="text-left py-3 px-4 text-cyan-300 font-semibold">Logout Time</th>
+                          <th className="text-left py-3 px-4 text-cyan-300 font-semibold">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {employeeSessions.map((session) => (
+                          <tr key={session._id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                            <td className="py-3 px-4">
+                              <div className="text-white font-semibold">{session.employee_name}</div>
+                              <div className="text-xs text-blue-300">ID: {session.employee_id} | {session.employee_email}</div>
+                            </td>
+                            <td className="py-3 px-4 text-cyan-300 text-sm font-mono">{formatDateTime(session.login_time)}</td>
+                            <td className="py-3 px-4 text-blue-300 text-sm font-mono">{formatDateTime(session.logout_time)}</td>
+                            <td className="py-3 px-4">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                                  session.status === "active"
+                                    ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-300"
+                                    : "bg-green-500/20 border-green-500/40 text-green-300"
+                                }`}
+                              >
+                                {session.status === "active" ? "Active" : "Logged Out"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="md:hidden space-y-3">
+                    {employeeSessions.map((session) => (
+                      <div key={session._id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="text-white font-semibold">{session.employee_name}</div>
+                            <div className="text-xs text-blue-300">ID: {session.employee_id}</div>
+                            <div className="text-xs text-slate-300 break-all">{session.employee_email}</div>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded text-[10px] font-semibold border ${
+                              session.status === "active"
+                                ? "bg-yellow-500/20 border-yellow-500/40 text-yellow-300"
+                                : "bg-green-500/20 border-green-500/40 text-green-300"
+                            }`}
+                          >
+                            {session.status === "active" ? "Active" : "Logged Out"}
+                          </span>
+                        </div>
+                        <div className="mt-3 space-y-1 text-xs">
+                          <div className="text-cyan-300">Login: <span className="text-white font-mono">{formatDateTime(session.login_time)}</span></div>
+                          <div className="text-blue-300">Logout: <span className="text-white font-mono">{formatDateTime(session.logout_time)}</span></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Quick Links Manager with Individual Edit - Mobile Optimized */}
