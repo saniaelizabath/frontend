@@ -115,6 +115,9 @@ const EmployeeDashboard = ({ loggedInEmployee, setCurrentPage }) => {
     try {
       const formData = new FormData();
       formData.append("employee_id", loggedInEmployee.id);
+      if (loggedInEmployee.session_id) {
+        formData.append("session_id", loggedInEmployee.session_id);
+      }
 
       await API.post("/employee/logout", formData, {
         headers: { "Content-Type": "multipart/form-data" },

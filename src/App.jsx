@@ -1,6 +1,7 @@
 // src/App.jsx - INTEGRATED WITH EMPLOYEE PORTAL - MOBILE RESPONSIVE
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Header from './components/Header';
+import API from './api';
 import HeroSection from './components/HeroSection';
 import ProgressSection from './components/ProgressSection';
 import WhyChooseUs from './components/WhyChooseUs';
@@ -58,6 +59,9 @@ function App() {
   // Employee state
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [loggedInEmployee, setLoggedInEmployee] = useState(null);
+  const previousPageRef = useRef(getInitialPage());
+  const loggedInEmployeeRef = useRef(null);
+  const logoutInProgressRef = useRef(false);
 
   // Extract token from URL on component mount
   useEffect(() => {
@@ -101,6 +105,45 @@ function App() {
     window.history.pushState({ page: newPage }, '', `?page=${newPage}`);
   };
 
+  const isEmployeeDashboardPage = (page) =>
+    typeof page === 'string' && page.startsWith('employee-dashboard-');
+
+  const markEmployeeLogout = useCallback(async ({ useBeacon = false } = {}) => {
+    const employee = loggedInEmployeeRef.current;
+    if (!employee?.id || logoutInProgressRef.current) return;
+
+    logoutInProgressRef.current = true;
+    try {
+      if (useBeacon && navigator.sendBeacon) {
+        const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+        const payload = new URLSearchParams();
+        payload.append('employee_id', String(employee.id));
+        if (employee.session_id) {
+          payload.append('session_id', String(employee.session_id));
+        }
+        const blob = new Blob(
+          [payload.toString()],
+          { type: 'application/x-www-form-urlencoded;charset=UTF-8' }
+        );
+        navigator.sendBeacon(`${apiBase}/employee/logout`, blob);
+      } else {
+        const formData = new FormData();
+        formData.append('employee_id', employee.id);
+        if (employee.session_id) {
+          formData.append('session_id', employee.session_id);
+        }
+
+        await API.post('/employee/logout', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
+    } catch (err) {
+      console.error('Auto logout mark failed:', err);
+    } finally {
+      setLoggedInEmployee(null);
+    }
+  }, []);
+
   // Smooth scroll to top when changing pages
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -110,6 +153,72 @@ function App() {
   useEffect(() => {
     scrollToTop();
   }, [currentPage]);
+
+  useEffect(() => {
+    loggedInEmployeeRef.current = loggedInEmployee;
+    if (loggedInEmployee?.id) {
+      logoutInProgressRef.current = false;
+    }
+  }, [loggedInEmployee]);
+
+  // Auto-logout employee whenever they leave employee dashboard to another page
+  useEffect(() => {
+    const previousPage = previousPageRef.current;
+    const wasEmployeeDashboard = isEmployeeDashboardPage(previousPage);
+    const isEmployeeDashboard = isEmployeeDashboardPage(currentPage);
+
+    if (wasEmployeeDashboard && !isEmployeeDashboard && loggedInEmployee?.id) {
+      markEmployeeLogout();
+    }
+
+    previousPageRef.current = currentPage;
+  }, [currentPage, loggedInEmployee, markEmployeeLogout]);
+
+  // Auto-logout when employee switches browser tab
+  useEffect(() => {
+    if (!isEmployeeDashboardPage(currentPage) || !loggedInEmployee?.id) return;
+
+    let blurTimeout = null;
+
+    const handleWindowBlur = () => {
+      blurTimeout = window.setTimeout(() => {
+        if (document.visibilityState !== 'hidden') return;
+        window.alert('Log out from your portal');
+        markEmployeeLogout({ useBeacon: true });
+        setCurrentPage('employee-portal');
+      }, 50);
+    };
+
+    window.addEventListener('blur', handleWindowBlur);
+    return () => {
+      if (blurTimeout) {
+        window.clearTimeout(blurTimeout);
+      }
+      window.removeEventListener('blur', handleWindowBlur);
+    };
+  }, [currentPage, loggedInEmployee, markEmployeeLogout]);
+
+  // Auto-logout when employee closes/reloads the website
+  useEffect(() => {
+    if (!isEmployeeDashboardPage(currentPage) || !loggedInEmployee?.id) return;
+
+    const handleBeforeUnload = (event) => {
+      markEmployeeLogout({ useBeacon: true });
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    const handlePageHide = () => {
+      markEmployeeLogout({ useBeacon: true });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [currentPage, loggedInEmployee, markEmployeeLogout]);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
